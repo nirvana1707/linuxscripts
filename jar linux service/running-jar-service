@@ -1,0 +1,52 @@
+#!/bin/sh
+SERVICE_NAME= # Name of service
+PATH_TO_JAR= # File path to .jar file
+PID_PATH_NAME= # File path to process id
+LOG_PATH_NAME= # Location of service log
+case $1 in
+    start)
+        echo "Starting $SERVICE_NAME ..."
+        if [ ! -f $PID_PATH_NAME ]; then
+            
+			nohup java -jar $PATH_TO_JAR >> $LOG_PATH_NAME 2>&1&
+            echo $! > $PID_PATH_NAME
+            echo "$SERVICE_NAME started on $! ..."
+        else
+            echo "$SERVICE_NAME is already running ..."
+        fi
+    ;;
+    stop)
+        if [ -f $PID_PATH_NAME ]; then
+            PID=$(cat $PID_PATH_NAME);
+            echo "$SERVICE_NAME on $PID stoping ..."
+            sudo kill $PID;
+            echo "$SERVICE_NAME on $PID stopped ..."
+            rm $PID_PATH_NAME
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
+	status)
+        if [ -f $PID_PATH_NAME ]; then
+            PID=$(cat $PID_PATH_NAME);
+            echo "$SERVICE_NAME is running on $PID...";
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
+    restart)
+        if [ -f $PID_PATH_NAME ]; then
+            PID=$(cat $PID_PATH_NAME);
+            echo "$SERVICE_NAME stopping ...";
+            sudo kill $PID;
+            echo "$SERVICE_NAME stopped ...";
+            rm $PID_PATH_NAME
+            echo "$SERVICE_NAME starting ..."
+            nohup java -jar $PATH_TO_JAR >> $LOG_PATH_NAME 2>&1&
+            echo $! > $PID_PATH_NAME
+            echo "$SERVICE_NAME started ..."
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
+esac
