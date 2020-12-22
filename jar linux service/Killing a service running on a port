@@ -1,0 +1,14 @@
+How to kill a service running on a port:
+
+Step1: Identify the process id
+lsof -i:<port_id>
+e.g.
+lsof -i:8095
+
+Step2: Kill the process using the id
+
+kill -9 process_id
+
+or:
+kill -9 $(lsof -t -i:<port_id>)
+kill -9 $(lsof -t -i:8095)
